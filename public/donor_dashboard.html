@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Dashboard - Blood Bank Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .donation-form {
+            margin-top: 20px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        #donationDetailsList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #donationDetailsList li {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="logo">BloodBank</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="donor_login.html">Donor</a>
+                <a href="patient_login.html">Patient</a>
+                <a href="admin.html">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="card fade-in">
+            <h1 style="text-align: center; color: var(--primary-color); margin-bottom: 2rem;">Donor Dashboard</h1>
+            
+            <div class="qr-container">
+                <h3>Blood Bag QR Code</h3>
+                <div id="qrCodeContainer"></div>
+                <p>Scan this QR code to view donation details</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <h3>Total Donations</h3>
+                    <p class="number" id="totalDonated">Loading...</p>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Last Donation</h3>
+                    <p class="number" id="lastDonation">Loading...</p>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>Blood Type</h3>
+                    <p class="number" id="bloodType">Loading...</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Donation History</h2>
+                <ul id="donationDetailsList" style="list-style: none; padding: 0;">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+
+            <div class="card" style="margin-top: 2rem;">
+                <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Actions</h2>
+                <button onclick="donateBlood()" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">Donate Blood</button>
+                <button onclick="displayBloodRequests('requestsList')" class="btn btn-secondary" style="width: 100%;">View Blood Requests</button>
+            </div>
+
+            <div id="requestsList" style="margin-top: 2rem;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Initialize the dashboard when the page loads
+        window.addEventListener('load', async () => {
+            try {
+                // Initialize Web3 if not already done
+                if (!web3 || !bloodBankContract) {
+                    await initWeb3();
+                }
+
+                // Display donation details
+                await displayStoredDonationDetails();
+
+                // Set up event listeners for MetaMask account changes
+                if (window.ethereum) {
+                    window.ethereum.on('accountsChanged', async function (accounts) {
+                        await displayStoredDonationDetails();
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                alert('Error loading dashboard. Please check console for details.');
+            }
+        });
+    </script>
+</body>
+</html>
